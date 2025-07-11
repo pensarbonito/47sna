@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>47SNA</title>
+  <style>
+    :root {
+      --bg: #f6f8fa;
+      --text: #24292f;
+      --border: #d0d7de;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 1rem;
+      font-size: 14px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .form-section {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+
+    .form-section input, .form-section button {
+      padding: 0.4rem 0.6rem;
+      font-size: 13px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: #fff;
+    }
+
+    .form-section input[type="color"] {
+      width: 34px;
+      height: 34px;
+      padding: 0;
+      border: none;
+    }
+
+    .form-section button {
+      background: #2da44e;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .calendar-container {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      margin-bottom: 2rem;
+    }
+
+    .month {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      aspect-ratio: 1 / 1; /* cuadrado */
+      overflow: hidden;
+    }
+
+    .month h2 {
+      text-align: center;
+      padding: 0.5rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-bottom: 1px solid var(--border);
+      margin: 0;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      grid-auto-rows: 1fr;
+      padding: 4px;
+      height: 100%;
+      gap: 2px;
+    }
+
+    .day {
+      background: #fff;
+      border: 1px solid #eaecef;
+      font-size: 0.65rem;
+      padding: 2px 3px;
+      display: flex;
+      flex-direction: column;
+      justify-content: start;
+    }
+
+    .day-number {
+      font-weight: 600;
+      font-size: 0.7rem;
+      color: #57606a;
+      margin-bottom: 2px;
+    }
+
+    .event-lines {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      margin-top: auto;
+    }
+
+    .event-line {
+      height: 6px;
+      border-radius: 3px;
+      width: 100%;
+    }
+
+    .event-list {
+      background: white;
+      padding: 1rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+
+    .event-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 0.4rem 0;
+    }
+
+    .color-box {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+    }
+
+    .event-item button {
+      padding: 2px 6px;
+      font-size: 11px;
+      background: #cf222e;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<h1>47SNA</h1>
+
+<div class="form-section">
+  <input type="text" id="event-name" placeholder="Nombre del evento" />
+  <input type="date" id="event-start" />
+  <input type="date" id="event-end" />
+  <input type="color" id="event-color" value="#0969da" />
+  <button onclick="addEvent()">Agregar</button>
+</div>
+
+<div class="calendar-container" id="calendar"></div>
+
+<div class="event-list">
+  <h3>Convención de eventos</h3>
+  <div id="event-list"></div>
+</div>
+
+<script>
+  const startMonth = 5; // Junio
+  const endMonth = 11;  // Diciembre
+  const year = 2025;
+  const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+  const events = [];
+
+  function addEvent() {
+    const name = document.getElementById("event-name").value.trim();
+    const start = document.getElementById("event-start").value;
+    const end = document.getElementById("event-end").value;
+    const color = document.getElementById("event-color").value;
+    if (!name || !start || !end) {
+      alert("Completa todos los campos.");
+      return;
+    }
+    events.push({ name, start, end, color });
+    createCalendar();
+    renderEventList();
+    clearForm();
+  }
+
+  function clearForm() {
+    document.getElementById("event-name").value = "";
+    document.getElementById("event-start").value = "";
+    document.getElementById("event-end").value = "";
+  }
+
+  function renderEventList() {
+    const list = document.getElementById("event-list");
+    list.innerHTML = "";
+    events.forEach((e, i) => {
+      const item = document.createElement("div");
+      item.className = "event-item";
+
+      const colorBox = document.createElement("div");
+      colorBox.className = "color-box";
+      colorBox.style.backgroundColor = e.color;
+
+      const label = document.createElement("span");
+      label.textContent = `${e.name}: ${e.start} → ${e.end}`;
+
+      const delBtn = document.createElement("button");
+      delBtn.textContent = "Eliminar";
+      delBtn.onclick = () => {
+        events.splice(i, 1);
+        createCalendar();
+        renderEventList();
+      };
+
+      item.appendChild(colorBox);
+      item.appendChild(label);
+      item.appendChild(delBtn);
+      list.appendChild(item);
+    });
+  }
+
+  function createCalendar() {
+    const container = document.getElementById("calendar");
+    container.innerHTML = "";
+
+    for (let m = startMonth; m <= endMonth; m++) {
+      const daysInMonth = new Date(year, m + 1, 0).getDate();
+      const firstDay = new Date(year, m, 1).getDay();
+
+      const monthDiv = document.createElement("div");
+      monthDiv.className = "month";
+
+      const title = document.createElement("h2");
+      title.textContent = monthNames[m];
+      monthDiv.appendChild(title);
+
+      const grid = document.createElement("div");
+      grid.className = "grid";
+
+      const totalCells = 42;
+
+      for (let i = 0; i < totalCells; i++) {
+        const dayDiv = document.createElement("div");
+        dayDiv.className = "day";
+
+        const dayNum = i - firstDay + 1;
+        if (i >= firstDay && dayNum <= daysInMonth) {
+          const dateStr = `${year}-${String(m+1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
+          dayDiv.dataset.date = dateStr;
+
+          const num = document.createElement("div");
+          num.className = "day-number";
+          num.textContent = dayNum;
+          dayDiv.appendChild(num);
+
+          const slot = document.createElement("div");
+          slot.className = "event-lines";
+
+          events.forEach(ev => {
+            const s = new Date(ev.start);
+            const e = new Date(ev.end);
+            const current = new Date(dateStr);
+            if (current >= s && current <= e) {
+              const line = document.createElement("div");
+              line.className = "event-line";
+              line.style.backgroundColor = ev.color;
+              line.title = ev.name; // Tooltip
+              slot.appendChild(line);
+            }
+          });
+
+          dayDiv.appendChild(slot);
+        }
+
+        grid.appendChild(dayDiv);
+      }
+
+      monthDiv.appendChild(grid);
+      container.appendChild(monthDiv);
+    }
+  }
+
+  createCalendar();
+</script>
+</body>
+</html>
