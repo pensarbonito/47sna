@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>47SNA</title>
+  <title>Calendario 47SNA</title>
   <style>
     :root {
       --bg: #f6f8fa;
@@ -71,7 +71,7 @@
       border-radius: 6px;
       display: flex;
       flex-direction: column;
-      aspect-ratio: 1 / 1; /* cuadrado */
+      aspect-ratio: 1 / 1;
       overflow: hidden;
     }
 
@@ -82,6 +82,16 @@
       font-weight: 600;
       border-bottom: 1px solid var(--border);
       margin: 0;
+    }
+
+    .weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      background: #f0f0f0;
+      font-size: 0.7rem;
+      text-align: center;
+      padding: 4px;
+      border-bottom: 1px solid var(--border);
     }
 
     .grid {
@@ -118,9 +128,20 @@
     }
 
     .event-line {
-      height: 6px;
+      height: 14px;
       border-radius: 3px;
       width: 100%;
+      display: flex;
+      align-items: center;
+      padding-left: 2px;
+    }
+
+    .event-line span {
+      font-size: 9px;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .event-list {
@@ -156,13 +177,14 @@
 </head>
 <body>
 
-<h1>47SNA</h1>
+<h1>Calendario 47SNA</h1>
 
 <div class="form-section">
   <input type="text" id="event-name" placeholder="Nombre del evento" />
   <input type="date" id="event-start" />
   <input type="date" id="event-end" />
   <input type="color" id="event-color" value="#0969da" />
+  <input type="text" id="event-desc" placeholder="Descripción del evento" />
   <button onclick="addEvent()">Agregar</button>
 </div>
 
@@ -177,21 +199,53 @@
   const startMonth = 5; // Junio
   const endMonth = 11;  // Diciembre
   const year = 2025;
+  const daysShort = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
   const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-  const events = [];
+  const events = [
+    {
+      name: "Gran encuentro vivencial",
+      start: "2025-11-02",
+      end: "2025-11-08",
+      color: "#F7DC6F",
+      desc: "1. MAN AFROINDÍGENA. 2. SINDICATO..."
+    },
+    {
+      name: "Segunda Asamblea",
+      start: "2025-08-03",
+      end: "2025-08-09",
+      color: "#d876e3",
+      desc: "detalle"
+    },
+     {
+      name: "Tercera Asamblea",
+      start: "2025-10-05",
+      end: "2025-10-11",
+      color: "#d876e3",
+      desc: "detalle"
+    },
+    {
+      name: "Recorrido 8",
+      start: "2025-09-07",
+      end: "2025-09-13",
+      color: "#2da44e",
+      desc: "Laguna del Buey"
+    }
+  ];
 
   function addEvent() {
     const name = document.getElementById("event-name").value.trim();
     const start = document.getElementById("event-start").value;
     const end = document.getElementById("event-end").value;
     const color = document.getElementById("event-color").value;
+    const desc = document.getElementById("event-desc").value.trim();
+
     if (!name || !start || !end) {
       alert("Completa todos los campos.");
       return;
     }
-    events.push({ name, start, end, color });
-    createCalendar();
-    renderEventList();
+
+    events.push({ name, start, end, color, desc });
+    updateCalendar();
     clearForm();
   }
 
@@ -199,6 +253,7 @@
     document.getElementById("event-name").value = "";
     document.getElementById("event-start").value = "";
     document.getElementById("event-end").value = "";
+    document.getElementById("event-desc").value = "";
   }
 
   function renderEventList() {
@@ -213,14 +268,13 @@
       colorBox.style.backgroundColor = e.color;
 
       const label = document.createElement("span");
-      label.textContent = `${e.name}: ${e.start} → ${e.end}`;
+      label.textContent = `${e.name}: ${e.start} → ${e.end}${e.desc ? " — " + e.desc : ""}`;
 
       const delBtn = document.createElement("button");
       delBtn.textContent = "Eliminar";
       delBtn.onclick = () => {
         events.splice(i, 1);
-        createCalendar();
-        renderEventList();
+        updateCalendar();
       };
 
       item.appendChild(colorBox);
@@ -228,6 +282,11 @@
       item.appendChild(delBtn);
       list.appendChild(item);
     });
+  }
+
+  function updateCalendar() {
+    createCalendar();
+    renderEventList();
   }
 
   function createCalendar() {
@@ -245,9 +304,17 @@
       title.textContent = monthNames[m];
       monthDiv.appendChild(title);
 
+      const weekdays = document.createElement("div");
+      weekdays.className = "weekdays";
+      daysShort.forEach(d => {
+        const dayName = document.createElement("div");
+        dayName.textContent = d;
+        weekdays.appendChild(dayName);
+      });
+      monthDiv.appendChild(weekdays);
+
       const grid = document.createElement("div");
       grid.className = "grid";
-
       const totalCells = 42;
 
       for (let i = 0; i < totalCells; i++) {
@@ -275,7 +342,18 @@
               const line = document.createElement("div");
               line.className = "event-line";
               line.style.backgroundColor = ev.color;
-              line.title = ev.name; // Tooltip
+              line.title = `${ev.name}\n${ev.desc || ''}`;
+
+              const initials = ev.name
+                .split(' ')
+                .map(w => w[0])
+                .join('')
+                .toUpperCase();
+
+              const label = document.createElement("span");
+              label.textContent = initials;
+              line.appendChild(label);
+
               slot.appendChild(line);
             }
           });
@@ -291,7 +369,8 @@
     }
   }
 
-  createCalendar();
+  updateCalendar();
 </script>
+
 </body>
 </html>
