@@ -42,6 +42,10 @@
       margin-bottom: 2rem;
     }
 
+.form-column {
+  max-width: 500px;
+}
+    
     .form-column,
     .event-column {
       flex: 1 1 450px;
@@ -82,8 +86,8 @@
       color: #1f1f1f;
       border: 1px solid #d0d0d0;
       border-radius: var(--radius);
-      padding: 0.4rem 0.8rem;
-      font-size: 13px;
+      padding: 0.2rem 0.4rem;
+      font-size: 10px;
       font-family: inherit;
       cursor: pointer;
       transition: background-color 0.2s ease;
@@ -184,7 +188,7 @@
     .event-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 12px;
+      font-size: 11px;
     }
 
     .event-table thead {
@@ -194,7 +198,7 @@
     .event-table th,
     .event-table td {
       border: 1px solid var(--border);
-      padding: 6px 8px;
+      padding: 3px;
       text-align: left;
       vertical-align: top;
     }
@@ -225,6 +229,62 @@
     .day-number.today {
   color: red;
 }
+
+@media (max-width: 768px) {
+  .top-section {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .form-column,
+  .event-column {
+    min-width: 100%;
+  }
+
+  .form-section input {
+    font-size: 14px;
+  }
+
+  .event-table {
+    font-size: 13px;
+    overflow-x: auto;
+    display: block;
+    width: 100%;
+  }
+
+  .event-table thead,
+  .event-table tbody,
+  .event-table th,
+  .event-table td,
+  .event-table tr {
+    display: block;
+  }
+
+  .event-table thead {
+    display: none;
+  }
+
+  .event-table tr {
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .event-table td {
+    text-align: right;
+    padding-left: 50%;
+    position: relative;
+  }
+
+  .event-table td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 8px;
+    width: 45%;
+    text-align: left;
+    font-weight: bold;
+    color: var(--muted);
+  }
+}
   </style>
 </head>
 <body>
@@ -249,13 +309,12 @@
           <thead>
             <tr>
             <th>#</th>
-              <th></th>
-              <th>Nombre</th>
+              <th colspan="2">Evento</th>
               <th>Fechas</th>
               <th>Detalle</th>
               <th>Lugar</th>
-              <th>Editar</th>
-              <th>X</th>
+              <th>Ed</th>
+              <th>El</th>
             </tr>
           </thead>
           <tbody id="event-list"></tbody>
@@ -341,16 +400,16 @@
       events.forEach((e, i) => {
         const tr = document.createElement("tr");
 
-        tr.innerHTML = `
-        <td>${i + 1}</td>  
-        <td><span class="color-swatch" style="background-color:${e.color}"></span></td>
-          <td>${e.name}</td>
-          <td>${e.start} → ${e.end}</td>
-          <td>${e.desc}</td>
-          <td>${e.place}</td>
-          <td><button onclick="editEvent(${i})">✎</button></td>
-          <td><button onclick="deleteEvent(${i})">X</button></td>
-        `;
+       tr.innerHTML = `
+  <td data-label="#">${i + 1}</td>
+  <td data-label=""><span class="color-swatch" style="background-color:${e.color}"></span></td>
+  <td data-label="Nombre">${e.name}</td>
+  <td data-label="Fechas">${e.start} → ${e.end}</td>
+  <td data-label="Detalle">${e.desc}</td>
+  <td data-label="Lugar">${e.place}</td>
+  <td data-label="Editar"><button onclick="editEvent(${i})">✎</button></td>
+  <td data-label="Eliminar"><button onclick="deleteEvent(${i})">X</button></td>
+`;
 
         tbody.appendChild(tr);
       });
