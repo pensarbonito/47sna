@@ -201,12 +201,15 @@ button {
     }
 
     .event-table th,
-    .event-table td {
-      border: 1px solid var(--border);
-      padding: 2px 4px 1px 4px;
-      text-align: left;
-      vertical-align: top;
-    }
+.event-table td {
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  border-left: none;
+  border-right: none;
+  padding: 6px 8px;
+  text-align: left;
+  vertical-align: top;
+}
 
     .event-table th:first-child,
     .event-table td:first-child {
