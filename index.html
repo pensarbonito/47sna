@@ -111,7 +111,7 @@ button {
 
     .month {
       background: white;
-      border: 1px solid var(--border);
+      border: 0px solid var(--border);
       border-radius: var(--radius);
       display: flex;
       flex-direction: column;
@@ -124,7 +124,7 @@ button {
       font-weight: 500;
       padding: 0.75rem;
       border-bottom: 1px solid var(--border);
-      background: #f9f9f9;
+      background: #ffffff;
       margin: 0;
     }
 
@@ -134,7 +134,7 @@ button {
       font-size: 0.7rem;
       text-align: center;
       padding: 4px;
-      background: #f5f5f5;
+      background: #ffffff;
       color: var(--muted);
     }
 
@@ -143,12 +143,12 @@ button {
       grid-template-columns: repeat(7, 1fr);
       grid-auto-rows: minmax(60px, auto);
       padding: 4px;
-      gap: 2px;
+      gap: 0px;
     }
 
     .day {
       border: 1px solid #f0f0f0;
-      padding: 4px;
+      padding: 2px;
       display: flex;
       flex-direction: column;
       font-size: 11px;
@@ -158,6 +158,7 @@ button {
       font-weight: 500;
       color: var(--muted);
       margin-bottom: 2px;
+      margin-left: 3px;
     }
 
     .event-lines {
@@ -169,8 +170,7 @@ button {
 
     .event-line {
       height: 16px;
-      border-radius: 3px;
-      padding-left: 2px;
+      padding-left: 5px;
       display: flex;
       align-items: center;
       background-color: #d0d0d0;
@@ -197,8 +197,9 @@ button {
     }
 
     .event-table thead {
-      background: #F7F9F9;
-    }
+  background: transparent;
+}
+
 
     .event-table th,
 .event-table td {
@@ -229,10 +230,12 @@ button {
     }
 
     @media (max-width: 768px) {
-      .top-section {
-        flex-direction: column;
-      }
-    }
+  .top-section {
+    flex-direction: column;
+    gap: 0.5rem; /* antes: 1.5rem o 2rem */
+  }
+}
+
     .day-number.today {
   color: red;
 }
@@ -246,6 +249,7 @@ button {
   .form-column,
   .event-column {
     min-width: 100%;
+    flex: 1 1 200px;
   }
 
   .form-section input {
@@ -302,25 +306,111 @@ button {
     flex-shrink: 0;
   }
 }
+
+.main-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.main-header h1 {
+  font-size: 1.8rem;
+  margin: 0;
+  color: var(--text);
+}
+
+.main-header p {
+  font-size: 1rem;
+  color: var(--muted);
+  margin: 0.5rem 0 0;
+}
+
+.main-footer {
+  text-align: center;
+  padding: 1rem;
+  margin-top: 3rem;
+  font-size: 12px;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+}
+
+.main-footer a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.main-footer a:hover {
+  text-decoration: underline;
+}
+@media (max-width: 768px) {
+  .event-table td {
+    border-top: none;
+    border-bottom: 1px solid var(--border); /* mantener sólo borde inferior */
+  }
+
+  .event-table tr:first-child td {
+    border-top: 1px solid var(--border); /* mantener borde superior solo en el primer bloque */
+  }
+}
+
+.form-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.form-row > input {
+  flex: 1;
+  min-width: 0;
+}
+
+.color-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  width: 50px; /* ajusta según necesidad */
+}
+
+.color-input {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+
   </style>
 </head>
 <body>
+    <header class="main-header">
+  <h1>Eventos 47SNA</h1>
+  <p>KAUKA &#126; asamblea de mundos posibles</p>
+</header>
+
   <div class="top-section">
     <div class="form-column">
-      <h2 class="form-title">47SNA</h2>
       <div class="form-section">
-        <input type="text" id="event-name" placeholder="Nombre del evento" />
-        <input type="date" id="event-start" />
-        <input type="date" id="event-end" />
-       
-        <input type="text" id="event-desc" placeholder="Descripción del evento" />
-        <input type="text" id="event-place" placeholder="Lugar del evento" />
-         <input type="color" id="event-color" value="#0969da" />
-       <button onclick="addEvent()">Agregar</button>
-      </div>
+  <div class="form-row">
+    <input type="text" id="event-name" placeholder="Nombre del evento" />
+<div class="color-container">
+  <input type="color" id="event-color" value="#0969da" class="color-input" />
+</div>
+  </div>
+  <div class="form-row">
+    <input type="date" id="event-start" />
+    <input type="date" id="event-end" />
+  </div>
+  <div class="form-row">
+    <input type="text" id="event-desc" placeholder="Descripción del evento" />
+    <input type="text" id="event-place" placeholder="Lugar del evento" />
+  </div>
+</div>
+
+  <button class="export-btn" onclick="addEvent()">Agregar</button>
+
     </div>
     <div class="event-column">
-      <h2 class="form-title">Eventos</h2>
       <div class="event-list">
         <table class="event-table">
           <thead>
@@ -568,5 +658,8 @@ dayDiv.appendChild(num);
 
     updateCalendar();
   </script>
+  <footer class="main-footer">
+  <p>2025 - 47SNA</p>
+</footer>
 </body>
 </html>
